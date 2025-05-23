@@ -1,3 +1,4 @@
+
 # Klasifikasi-deteksi-anomali - Muhammad Daniel Ilyasa
 
 ## Domain Proyek
@@ -101,44 +102,39 @@ Dataset terdiri dari **2.461 entri** (baris) dan **8 fitur** (kolom), dengan rin
 
 ### Exploratory Data Analysis
 visualisasi pergerakan jumlah Income dan Expense per bulan dari tahun 2015 hingga 2018.
-![enter image description here](https://github.com/daniel020901/Klasifikasi-deteksi-anomali/blob/master/Tren_visualisasi.png)
+![Tren_visualisasi](https://github.com/user-attachments/assets/7ac608a7-a524-42d0-afd7-8afee6ad6f1f)
 
 
 
+##  Data Preparation
 
-### Data Preparation
+Sebelum membangun model prediksi, dilakukan serangkaian proses transformasi data untuk memastikan kualitas dan konsistensi dataset. Tahapan yang dilakukan antara lain:
+1. **Mengubah format tanggal**: Kolom `Date` dikonversi menjadi format `datetime` agar memudahkan analisis berbasis waktu.
+2. **Mengisi kolom dengan banyak missing values**: Kolom `Subcategory` dan `Note` yang  memberikan keterangan jika nilai kosong dengan tidak diketahui.
+3. **Menghapus data duplikat**: Untuk memastikan data unik dan tidak terjadi bias dalam pelatihan model.
+4. **Mengubah nilai 'Transfer-Out' menjadi 'Expense' pada kolom 'Income/Expense'**: dilakukan proses transformasi data untuk memastikan konsistensi dalam kategori Income/Expense. Secara spesifik, nilai Transfer-Out pada kolom `Income/Expense` diganti dengan `Expense` untuk menghindari ambiguitas.
+6. **Memilih fitur yang relevan**: Data yang akan difokuskan pada kolom berdasarkan `Date`,`Amount`, `Income/Expense` yang hanya bernilai `Expense`.
+7. **Normalisasi data**: Kolom `Amount` dinormalisasi menggunakan MinMaxScaler agar lebih sesuai untuk pelatihan model LSTM.
 
-Pada tahap ini, data dipersiapkan untuk digunakan dalam proses analisis dan peramalan pengeluaran harian berbasis deep learning. Teknik yang diterapkan dilakukan secara berurutan sebagai berikut:
+* Tahap Data Preparation adalah langkah penting dalam proses machine learning karena kualitas data sangat memengaruhi performa model.
+* Visualisasi data setelah proses cleaning.
 
-1. **Pemilihan Fitur Relevan**  
-   Dari keseluruhan dataset, hanya tiga kolom yang dipilih untuk keperluan analisis, yaitu:  
-   - `Date`: Digunakan sebagai indeks waktu.  
-   - `Amount`: Nilai transaksi yang akan dianalisis.  
-   - `Income/Expense`: Digunakan untuk memfilter data hanya dengan nilai `Expense`, karena fokus prediksi adalah pada pola pengeluaran.  
-   Transaksi dengan nilai `Income` dihapus karena tidak relevan untuk tujuan prediksi pengeluaran.
+##  Data Modeling Preparation
 
-2. **Konversi Mata Uang**  
-   Seluruh transaksi yang menggunakan mata uang `INR` dikonversi ke dalam mata uang `IDR` secara manual. Konversi ini mengacu pada nilai tukar per 20 Mei 2025, yaitu:  
-   **1 INR = 191.96 IDR**  
-   Langkah ini bertujuan untuk menyeragamkan nilai nominal agar hasil analisis lebih konsisten dengan konteks ekonomi lokal.
+Setelah data dibersihkan dan dinormalisasi, dilakukan tahap persiapan khusus untuk pelatihan model deret waktu:
 
-3. **Normalisasi Nilai Transaksi (Min-Max Scaling)**  
-   Nilai `Amount` kemudian dinormalisasi ke dalam rentang 0 sampai 1 menggunakan teknik **MinMaxScaler** dari Scikit-Learn.  
-   Proses normalisasi dilakukan agar model lebih stabil dan cepat saat melakukan proses pelatihan, serta untuk menghindari dominasi fitur tertentu karena skala yang besar.
-
-4. **Pemisahan Data Latih dan Uji**  
+1. **Pemisahan Data Latih dan Uji**  
    Dataset dibagi menjadi dua bagian:  
    - **80% data** digunakan sebagai **data latih**  
    - **20% data** digunakan sebagai **data uji**  
    Pemisahan dilakukan berdasarkan urutan waktu (chronological split), bukan acak, untuk mempertahankan struktur deret waktu yang valid.
 
-5. **Pembuatan Urutan Deret Waktu (Time Series Sequences)**  
+2. **Pembuatan Urutan Deret Waktu (Time Series Sequences)**  
    Data kemudian dikonstruksi ke dalam bentuk urutan berjangka waktu (time-windowed sequences) dengan jendela pengamatan selama **29 hari**.  
    Artinya, model akan menggunakan 29 hari pengeluaran terakhir untuk memprediksi pengeluaran pada hari ke-30.  
    Teknik ini penting untuk memungkinkan model belajar pola historis dalam data deret waktu.
 
 Dengan serangkaian tahap ini, data telah siap untuk digunakan dalam proses pelatihan model prediktif untuk mendeteksi dan memperkirakan pola pengeluaran di masa depan.
-
 
 ## Model Development
 
